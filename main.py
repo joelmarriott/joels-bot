@@ -1,21 +1,25 @@
 #!/usr/bin/python3
 from datetime import date
-from discord.ext import commands
-from discord_slash import SlashCommand, SlashContext
-# The below will `import discord` and override some of it's stuff
-from discord_slash.dpy_overrides import *
-from discord_slash.model import SlashCommandOptionType
 import discord
 import logging
 import os
 import sys
 
 
-client = commands.Bot(command_prefix='/')
-slash = SlashCommand(client, sync_commands=True)
-token = os.environ["JOELTOK"]
+bot = discord.Bot()
+@bot.event
+async def on_ready(): 
+    logging.info("We have logged in as {self.user}!")
 
+@bot.slash_command(
+    name="hello",
+    description="Say hello to the bot",
+    guild_ids=[232293743112355851]
+)
+async def hello(ctx):
+    await ctx.respond("Hello!")
 
+        
 def main():
     """
     Run the bot
@@ -34,21 +38,16 @@ def main():
                                           today+".log"),
                         level=logging.INFO)
 
-    # Load the Cogs
-    cogs = [
-        'say',
+    cogs_list = [
+        "help",
+        "say",
     ]
-    for cog in cogs:
-        try:
-        client.load_extension(f'cogs.{cog}')
-        logging.info(f" Cog loaded: {cog}\n")
-        sys.stdout.flush()
-        except Exception as ex:
-            logging.error(f" Command load failed: {command}\n")
-            sys.stderr.flush()       
-    client.run(token)
 
+    for cog in cogs_list:
+        bot.load_extension(f'cogs.{cog}')
     
+    bot.run(os.environ["JOELTOK"])
 
+               
 if __name__ == "__main__":
     main()

@@ -1,26 +1,16 @@
-from discord.ext import commands
-from discord_slash import SlashContext, cog_ext
-# The below will `import discord` and override some of its stuff
-from discord_slash.dpy_overrides import *
-from discord_slash.model import SlashCommandOptionType
+import discord
 import logging
 
-class say(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+class Say(discord.Cog):
+    def __init__(self, bot):
         self.bot = bot
 
-    @cog_ext.cog_slash(name='say',
-                       description='The bot will repeat after you...',
-                       options=[{'name':'message',
-                                 'description': 'Hello World!',
-                                 'type': SlashCommandOptionType.STRING,
-                                 'required': True}])        
-    @commands.command()
-    async def say(self, ctx: SlashContext, message: str):
+    @discord.slash_command()
+    async def say(self, ctx, message: discord.Option(str)):
         """Says hello"""
-        await ctx.send(message)
-        logging.info(str(ctx.author.name)+"("+(ctx.author.id)+") used say: "+message)
+        await ctx.respond(message)
+        logging.info(str(ctx.author.name)+"("+str(ctx.author.id)+") used say: "+message)
 
         
 def setup(bot):
-    bot.add_cog(say(bot))
+    bot.add_cog(Say(bot))
